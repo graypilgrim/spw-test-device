@@ -16,7 +16,7 @@ public:
 	Socket(unsigned int port_no);
 
 	void startServer(std::function<void(void)> on_client_connection);
-	void receivePackage(std::function<void(Package package)> on_package_received);
+	void receivePackage(std::function<void(const Package &)> on_package_received);
 	void sendPackage(const Package &package);
 
 private:

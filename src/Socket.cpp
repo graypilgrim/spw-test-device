@@ -30,7 +30,7 @@ void Socket::startServer(std::function<void(void)> on_client_connection)
 			throw std::runtime_error("Cannot open client socket");
 }
 
-void Socket::receivePackage(std::function<void(Package package)> on_package_received)
+void Socket::receivePackage(std::function<void(const Package &package)> on_package_received)
 {
 	unsigned char buffer[256] = {0};
 	auto read_chars = read(client_socket_descriptor_, &buffer, 256);

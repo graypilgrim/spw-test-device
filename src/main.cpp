@@ -6,5 +6,6 @@ int main(int argc, char* argv[])
 {
 	std::cout << "Hello world" << std::endl;
 
-	Shell(argc, argv);
+	Shell sh{argc, argv};
+	sh.run();
 }
