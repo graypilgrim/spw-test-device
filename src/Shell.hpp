@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
+#include <fstream>
 
 class Shell
 {
@@ -18,13 +19,16 @@ private:
 	void printPrompt();
 	void printHelpMessage(const std::string& = {});
 	void sendPackage(const std::string &file_name);
-	void receivePackage(const Package &package);
+	void onPackageReceiving(const Package &package);
+	void onClientConnection() const;
 	void logPackage(const Package &package, bool sent);
 	void beVerbose(const std::string& = {});
 	void beQuiet(const std::string& = {});
 
 	unsigned int server_port_;
 	std::string log_file_name_;
+	bool verbosity = true;
+	std::ofstream log_file_;
 	std::unordered_map<std::string, std::function<void(const std::string&)>> methods;
 
 	static constexpr const char* help_command_ = "help";

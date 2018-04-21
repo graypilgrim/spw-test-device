@@ -40,6 +40,7 @@ Shell::Shell(int argc, char* argv[])
 			case 'l':
 				std::cout << optarg << std::endl;
 				log_file_name_ = optarg;
+				verbosity = false;
 				break;
 
 			default:
@@ -57,10 +58,10 @@ Shell::Shell(int argc, char* argv[])
 
 void Shell::run()
 {
-	//auto socket = Socket{server_port_};
-	//socket.startServer([](){std::cout << "Client connected" << std::endl;}); 
-	//using namespace std::placeholders;
-	//socket.receivePackage(std::bind(&Shell::receivePackage, this, _1));
+	auto socket = Socket{server_port_};
+	socket.startServer(std::bind(&Shell::onClientConnection, this)); 
+	using namespace std::placeholders;
+	socket.receivePackage(std::bind(&Shell::onPackageReceiving, this, _1));
 
 	std::string line;
 	while(printPrompt(), std::getline(std::cin, line)) {
@@ -85,24 +86,34 @@ void Shell::printPrompt() {
 }
 
 void Shell::printHelpMessage(const std::string&) {
+	//TODO
 	std::cout << "helpMessage" << std::endl;
 }
 
 void Shell::sendPackage(const std::string &file_name) {
-	std::cout << "sned" << file_name << std::endl;
+	//TODO
+	std::cout << "send" << file_name << std::endl;
 }
 
-void Shell::receivePackage(const Package &package) {
+void Shell::onPackageReceiving(const Package &package) {
+	//TODO
+}
+
+void Shell::onClientConnection() const{
+	//TODO
 }
 
 void Shell::logPackage(const Package &package, bool sent) {
+	//TODO
 }
 
 void Shell::beVerbose(const std::string&) {
 	std::cout << "verbose" << std::endl;
+	verbosity = true;
 }
 
 void Shell::beQuiet(const std::string&) {
 	std::cout << "quiet" << std::endl;
+	verbosity = false;
 }
 
