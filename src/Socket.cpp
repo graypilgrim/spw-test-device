@@ -41,6 +41,6 @@ void Socket::receivePackage(std::function<void(const Package &package)> on_packa
 
 void Socket::sendPackage(const Package &package)
 {
-
+	
 }
 
