@@ -1,6 +1,7 @@
 #include "Socket.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 Socket::Socket(unsigned int port_no)
 	: port_no_(port_no)
@@ -37,6 +38,8 @@ void Socket::receivePackage(std::function<void(const Package &package)> on_packa
 
 	if (read_chars == -1)
 		throw std::runtime_error("Reading data error");
+
+	std::cout << "Received: " << read_chars << "B" << std::endl;
 }
 
 void Socket::sendPackage(const Package &package)

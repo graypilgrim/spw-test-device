@@ -6,56 +6,34 @@
 class Package
 {
 public:
-	virtual ~Package() = default;
+	Package(size_t data_len);
+	Package(std::unique_ptr<uint8_t> &&data);
 
-	virtual size_t getHeaderLen() const = 0;
-	virtual size_t getDataLen() const = 0;
-	virtual uint8_t getHeaderCRC() const = 0;
-	virtual uint8_t getDataCRC() const = 0;
+	bool isValid();
+	
+	size_t getDataLen();
+	uint8_t getHeaderCRC();
+	uint8_t getDataCRC();
 
 
-	const uint8_t* getRawData() const;
-	uint8_t* getRawData();
+private:
+	uint8_t calculateHeaderCRC();
+	uint8_t calculateDataCRC();
+	void setDataLen(size_t len);
+	size_t getDataCRCIndex();
 
-protected:
 	static uint8_t calculateCRC(const uint8_t *data, size_t len);
 
-	static constexpr uint32_t WORD_OFFSET_ = 4;
-	static constexpr uint32_t HEADER_LEN_OFFSET_ = 3;
-	
+	static constexpr size_t MIN_PACKAGE_LEN_= 18;
+	static constexpr size_t DATA_OFFSET_ = 16;
+	static constexpr size_t TRANSACTION_ID_MS_ = 5;	
+	static constexpr size_t TRANSACTION_ID_LS_ = 6;
+	static constexpr size_t DATA_LEN_MS_ = 12;
+	static constexpr size_t DATA_LEN_ = 13;
+	static constexpr size_t DATA_LEN_LS_ = 14;
+	static constexpr size_t HEADER_CRC_ = 15;
+	static constexpr uint8_t EOP_SIGN_ = 0x0;
 	std::unique_ptr<uint8_t> raw_package_;
-};
-
-class TransmitPackage : public Package
-{
-public:
-	TransmitPackage(size_t header_len, size_t data_len);
-	TransmitPackage(std::unique_ptr<uint8_t> raw_package);
-
-	size_t getHeaderLen() const override;
-	size_t getDataLen() const override;
-	uint8_t getHeaderCRC() const override;
-	uint8_t getDataCRC() const override;
-
-private:
-	static constexpr uint32_t MAX_HEADER_LEN_ = 255;
-	static constexpr uint32_t MAX_DATA_LEN_ = 16777215;
-	static constexpr uint32_t MIN_PACKAGE_LEN_ = 8;
-};
-
-class ReceivePackage : public Package
-{
-public:
-	ReceivePackage();
-
-	size_t getHeaderLen() const override;
-	size_t getDataLen() const override;
-	uint8_t getHeaderCRC() const override;
-	uint8_t getDataCRC() const override;
-
-private:
-	static constexpr uint32_t MAX_PACKET_SIZE_ = 16777480;
-
 };
 
 #endif

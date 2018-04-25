@@ -2,6 +2,7 @@
 #define SHELL_HPP
 
 #include "Package.hpp"
+#include "Socket.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -18,7 +19,7 @@ public:
 private:
 	void printPrompt();
 	void printHelpMessage(const std::string& = {});
-	void sendPackage(const std::string &file_name);
+	void sendPackage(const std::string &package_size);
 	void onPackageReceiving(const Package &package);
 	void onClientConnection() const;
 	void logPackage(const Package &package, bool sent);
@@ -30,6 +31,8 @@ private:
 	bool verbosity = true;
 	std::ofstream log_file_;
 	std::unordered_map<std::string, std::function<void(const std::string&)>> methods;
+
+	Socket socket;
 
 	static constexpr const char* help_command_ = "help";
 	static constexpr const char* send_command_ = "send";

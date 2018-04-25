@@ -1,7 +1,5 @@
 #include "Shell.hpp"
 
-#include "Socket.hpp"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
@@ -58,10 +56,15 @@ Shell::Shell(int argc, char* argv[])
 
 void Shell::run()
 {
-	auto socket = Socket{server_port_};
-	socket.startServer(std::bind(&Shell::onClientConnection, this)); 
+	std::cout << "Starting server on port " << server_port_ << "..." << std::endl;
+	socket = Socket{server_port_};
+	socket.startServer(std::bind(&Shell::onClientConnection, this));
+	
+	std::cout << "Client connected" << std::endl;
+	
 	using namespace std::placeholders;
 	socket.receivePackage(std::bind(&Shell::onPackageReceiving, this, _1));
+
 
 	std::string line;
 	while(printPrompt(), std::getline(std::cin, line)) {
@@ -90,13 +93,23 @@ void Shell::printHelpMessage(const std::string&) {
 	std::cout << "helpMessage" << std::endl;
 }
 
-void Shell::sendPackage(const std::string &file_name) {
-	//TODO
-	std::cout << "send" << file_name << std::endl;
+void Shell::sendPackage(const std::string &package_size) {
+	std::cout << "sending package of size: " << package_size << "B" << std::endl;
+
+	size_t size;
+	try {
+		size = std::strtoull(package_size.c_str(), NULL, 0);
+	} catch (std::exception &e) {
+		std::cout << "Package size must be positive number";
+		return;
+	}
+
+	socket.sendPackage(Package{size});
 }
 
 void Shell::onPackageReceiving(const Package &package) {
 	//TODO
+	std::cout << "Shell command" <<  std::endl;
 }
 
 void Shell::onClientConnection() const{

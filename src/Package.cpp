@@ -40,9 +40,88 @@ namespace
 	};
 }
 
-const uint8_t* Package::getRawData() const
+Package::Package(size_t data_len)
 {
-	return raw_package_.get();
+	raw_package_ = std::unique_ptr<uint8_t>(new uint8_t[MIN_PACKAGE_LEN_ + data_len]);
+
+	setDataLen(data_len);
+
+	raw_package_.get()[HEADER_CRC_] = calculateHeaderCRC();
+	raw_package_.get()[getDataCRCIndex()] = calculateDataCRC();
+	
+	raw_package_.get()[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;	
+}
+
+Package::Package(std::unique_ptr<uint8_t> &&data)
+	: raw_package_(std::move(data))
+{}
+
+bool Package::isValid()
+{
+	const auto ptr = raw_package_.get();
+
+	if (ptr[HEADER_CRC_] != calculateHeaderCRC())
+		return false;
+
+	if (ptr[getDataCRCIndex()] != calculateDataCRC())
+		return false;
+
+	if (ptr[MIN_PACKAGE_LEN_ + getDataLen() - 1] != EOP_SIGN_)
+		return false;
+
+	return true;
+}
+
+size_t Package::getDataLen()
+{
+	size_t res = 0;
+
+	res += raw_package_.get()[DATA_LEN_MS_] << 16;
+	res += raw_package_.get()[DATA_LEN_] << 8;
+	res += raw_package_.get()[DATA_LEN_LS_];
+
+	return res;
+}
+
+uint8_t Package::getHeaderCRC()
+{
+	return raw_package_.get()[HEADER_CRC_];
+}
+
+uint8_t Package::getDataCRC()
+{
+	return raw_package_.get()[getDataCRCIndex()];
+}
+
+size_t Package::getDataCRCIndex()
+{
+	return DATA_OFFSET_ + getDataLen();
+}
+
+uint8_t Package::calculateHeaderCRC()
+{
+	return calculateCRC(raw_package_.get(), DATA_OFFSET_ - 1);
+}
+
+uint8_t Package::calculateDataCRC()
+{	
+	const auto ptr = raw_package_.get() + DATA_OFFSET_; 
+	return calculateCRC(ptr, getDataLen());
+}
+
+void Package::setDataLen(size_t len)
+{
+	auto ptr = raw_package_.get();
+	uint8_t temp = 0;
+	
+	temp = static_cast<uint8_t>(len >> 16);
+	ptr[DATA_LEN_MS_] = temp;
+
+	temp = static_cast<uint8_t>(len >> 8);
+	ptr[DATA_LEN_] = temp;
+
+	temp = static_cast<uint8_t>(len);
+	ptr[DATA_LEN_LS_] = temp;
 }
 
 uint8_t Package::calculateCRC(const uint8_t *data, size_t len)
@@ -56,87 +135,4 @@ uint8_t Package::calculateCRC(const uint8_t *data, size_t len)
   return crc;	
 }
 
-TransmitPackage::TransmitPackage(size_t header_len, size_t data_len)
-{
-	if (header_len > MAX_HEADER_LEN_)
-		throw std::runtime_error("Maximum header length exceeded");
 
-	if (data_len > MAX_DATA_LEN_)
-		throw std::runtime_error("Maximum data length exceeded");
-
-	raw_package_ = std::unique_ptr<uint8_t>(new uint8_t[MIN_PACKAGE_LEN_ + header_len + data_len]);  
-//TODO: insert header and data len
-}
-
-TransmitPackage::TransmitPackage(std::unique_ptr<uint8_t> raw_package)
-{
-	raw_package_ = std::move(raw_package);
-}
-
-size_t TransmitPackage::getHeaderLen() const
-{
-	return getRawData()[HEADER_LEN_OFFSET_];
-}
-
-size_t TransmitPackage::getDataLen() const
-{
-	size_t res = 0;
-	auto ptr = getRawData() + WORD_OFFSET_ + getHeaderLen() + 1;
-
-	res += static_cast<size_t>(*ptr) << 16;
-	++ptr;
-	res += static_cast<size_t>(*ptr) << 8;
-	++ptr;
-	res += *ptr;
-
-	return res;	
-}
-
-uint8_t TransmitPackage::getHeaderCRC() const
-{
-	const auto ptr = getRawData() + WORD_OFFSET_;
-	return Package::calculateCRC(ptr, getHeaderLen());
-}
-
-uint8_t TransmitPackage::getDataCRC() const
-{
-	const auto ptr = getRawData() + WORD_OFFSET_ + getHeaderLen() + WORD_OFFSET_;
-	return Package::calculateCRC(ptr, getDataLen());
-}
-
-ReceivePackage::ReceivePackage()
-{
-	raw_package_ = std::unique_ptr<uint8_t>(new uint8_t[MAX_PACKET_SIZE_]);  
-}
-
-size_t ReceivePackage::getHeaderLen() const
-{
-	getRawData()[HEADER_LEN_OFFSET_];
-}
-
-size_t ReceivePackage::getDataLen() const
-{
-	size_t res = 0;
-	auto ptr = getRawData() + WORD_OFFSET_ + getHeaderLen() + 1 + 1;
-
-	res += static_cast<size_t>(*ptr) << 16;
-	++ptr;
-	res += static_cast<size_t>(*ptr) << 8;
-	++ptr;
-	res += *ptr;
-
-	return res;
-}
-
-uint8_t ReceivePackage::getHeaderCRC() const
-{
-	//TODO: move to base class
-	const auto ptr = getRawData() + WORD_OFFSET_;
-	return Package::calculateCRC(ptr, getHeaderLen());
-}
-
-uint8_t ReceivePackage::getDataCRC() const
-{
-	const auto ptr = getRawData() + WORD_OFFSET_ + getHeaderLen() + 1 + WORD_OFFSET_;
-	return Package::calculateCRC(ptr, getHeaderLen());
-}

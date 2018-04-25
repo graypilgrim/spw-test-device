@@ -13,6 +13,7 @@
 class Socket
 {
 public:
+	Socket() = default;
 	Socket(unsigned int port_no);
 
 	void startServer(std::function<void(void)> on_client_connection);
