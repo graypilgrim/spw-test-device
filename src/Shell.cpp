@@ -47,11 +47,10 @@ Shell::Shell(int argc, char* argv[])
 		}
 	} while(res > 0);
 
-	methods.emplace(help_command_, std::bind(&Shell::printHelpMessage, this, std::string{}));
-	methods.emplace(send_command_, std::bind(&Shell::sendPackage, this, std::placeholders::_1));
-	methods.emplace(verbose_command_, std::bind(&Shell::beVerbose, this, std::string{}));
-	methods.emplace(quiet_command_, std::bind(&Shell::beQuiet, this, std::string{}));
-	
+	methods.emplace(help_command_, [this](const std::string&) { printHelpMessage(); });
+	methods.emplace(send_command_, [this](const std::string &package_size) { sendPackage(package_size); });
+	methods.emplace(verbose_command_, [this](const std::string&) { beVerbose(); });
+	methods.emplace(quiet_command_, [this](const std::string&) { beQuiet(); });
 }
 
 void Shell::run()
@@ -104,8 +103,7 @@ void Shell::sendPackage(const std::string &package_size) {
 }
 
 void Shell::onPackageReceiving(const Package &package) {
-	//TODO
-	std::cout << "Shell command" <<  std::endl;
+	std::cout << "Content: " << package.getRawData() << std::endl;
 }
 
 void Shell::onClientConnection() const{

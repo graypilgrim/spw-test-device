@@ -8,14 +8,15 @@ class Package
 {
 public:
 	Package(size_t data_len);
-	Package(std::vector<uint8_t> &&data);
+	Package(uint8_t* data, size_t package_len);
+
+	const uint8_t* getRawData() const;
 
 	bool isValid();
 	
 	size_t getDataLen();
 	uint8_t getHeaderCRC();
 	uint8_t getDataCRC();
-
 
 private:
 	uint8_t calculateHeaderCRC();

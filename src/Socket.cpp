@@ -45,7 +45,7 @@ void Socket::receivePackage()
 		throw std::runtime_error("Reading data error");
 
 	std::cout << "Received: " << read_chars << "B" << std::endl;
-	std::cout << "Content: " << buffer << std::endl;
+	on_package_received_(Package{buffer, read_chars});
 }
 
 void Socket::sendPackage(const Package &package)
