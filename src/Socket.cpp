@@ -2,12 +2,13 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <thread>
 
 Socket::Socket(unsigned int port_no)
 	: port_no_(port_no)
 {}
 
-void Socket::startServer(std::function<void(void)> on_client_connection)
+void Socket::startServer(std::function<void(const Package &package)> on_package_received)
 {
 	socket_descriptor_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -29,9 +30,13 @@ void Socket::startServer(std::function<void(void)> on_client_connection)
 
 		if (client_socket_descriptor_ == -1 )
 			throw std::runtime_error("Cannot open client socket");
+
+	on_package_received_ = std::move(on_package_received);
+	reading_thread_ = std::thread(&Socket::receivePackage, this);
+	reading_thread_.detach();
 }
 
-void Socket::receivePackage(std::function<void(const Package &package)> on_package_received)
+void Socket::receivePackage()
 {
 	unsigned char buffer[256] = {0};
 	auto read_chars = read(client_socket_descriptor_, &buffer, 256);
@@ -40,6 +45,7 @@ void Socket::receivePackage(std::function<void(const Package &package)> on_packa
 		throw std::runtime_error("Reading data error");
 
 	std::cout << "Received: " << read_chars << "B" << std::endl;
+	std::cout << "Content: " << buffer << std::endl;
 }
 
 void Socket::sendPackage(const Package &package)

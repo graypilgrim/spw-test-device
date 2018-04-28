@@ -42,31 +42,28 @@ namespace
 
 Package::Package(size_t data_len)
 {
-	raw_package_ = std::unique_ptr<uint8_t>(new uint8_t[MIN_PACKAGE_LEN_ + data_len]);
-
+	raw_package_.reserve(MIN_PACKAGE_LEN_ + data_len); 
 	setDataLen(data_len);
 
-	raw_package_.get()[HEADER_CRC_] = calculateHeaderCRC();
-	raw_package_.get()[getDataCRCIndex()] = calculateDataCRC();
+	raw_package_[HEADER_CRC_] = calculateHeaderCRC();
+	raw_package_[getDataCRCIndex()] = calculateDataCRC();
 	
-	raw_package_.get()[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;	
+	raw_package_[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;	
 }
 
-Package::Package(std::unique_ptr<uint8_t> &&data)
+Package::Package(std::vector<uint8_t> &&data)
 	: raw_package_(std::move(data))
 {}
 
 bool Package::isValid()
 {
-	const auto ptr = raw_package_.get();
-
-	if (ptr[HEADER_CRC_] != calculateHeaderCRC())
+	if (raw_package_[HEADER_CRC_] != calculateHeaderCRC())
 		return false;
 
-	if (ptr[getDataCRCIndex()] != calculateDataCRC())
+	if (raw_package_[getDataCRCIndex()] != calculateDataCRC())
 		return false;
 
-	if (ptr[MIN_PACKAGE_LEN_ + getDataLen() - 1] != EOP_SIGN_)
+	if (raw_package_[MIN_PACKAGE_LEN_ + getDataLen() - 1] != EOP_SIGN_)
 		return false;
 
 	return true;
@@ -76,21 +73,21 @@ size_t Package::getDataLen()
 {
 	size_t res = 0;
 
-	res += raw_package_.get()[DATA_LEN_MS_] << 16;
-	res += raw_package_.get()[DATA_LEN_] << 8;
-	res += raw_package_.get()[DATA_LEN_LS_];
+	res += raw_package_[DATA_LEN_MS_] << 16;
+	res += raw_package_[DATA_LEN_] << 8;
+	res += raw_package_[DATA_LEN_LS_];
 
 	return res;
 }
 
 uint8_t Package::getHeaderCRC()
 {
-	return raw_package_.get()[HEADER_CRC_];
+	return raw_package_[HEADER_CRC_];
 }
 
 uint8_t Package::getDataCRC()
 {
-	return raw_package_.get()[getDataCRCIndex()];
+	return raw_package_[getDataCRCIndex()];
 }
 
 size_t Package::getDataCRCIndex()
@@ -100,28 +97,27 @@ size_t Package::getDataCRCIndex()
 
 uint8_t Package::calculateHeaderCRC()
 {
-	return calculateCRC(raw_package_.get(), DATA_OFFSET_ - 1);
+	return calculateCRC(raw_package_.data(), DATA_OFFSET_ - 1);
 }
 
 uint8_t Package::calculateDataCRC()
 {	
-	const auto ptr = raw_package_.get() + DATA_OFFSET_; 
+	const auto ptr = raw_package_.data() + DATA_OFFSET_;
 	return calculateCRC(ptr, getDataLen());
 }
 
 void Package::setDataLen(size_t len)
 {
-	auto ptr = raw_package_.get();
 	uint8_t temp = 0;
 	
 	temp = static_cast<uint8_t>(len >> 16);
-	ptr[DATA_LEN_MS_] = temp;
+	raw_package_[DATA_LEN_MS_] = temp;
 
 	temp = static_cast<uint8_t>(len >> 8);
-	ptr[DATA_LEN_] = temp;
+	raw_package_[DATA_LEN_] = temp;
 
 	temp = static_cast<uint8_t>(len);
-	ptr[DATA_LEN_LS_] = temp;
+	raw_package_[DATA_LEN_LS_] = temp;
 }
 
 uint8_t Package::calculateCRC(const uint8_t *data, size_t len)

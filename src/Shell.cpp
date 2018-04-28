@@ -58,14 +58,10 @@ void Shell::run()
 {
 	std::cout << "Starting server on port " << server_port_ << "..." << std::endl;
 	socket = Socket{server_port_};
-	socket.startServer(std::bind(&Shell::onClientConnection, this));
+	socket.startServer([this](const Package &package){onPackageReceiving(package);});
 	
 	std::cout << "Client connected" << std::endl;
 	
-	using namespace std::placeholders;
-	socket.receivePackage(std::bind(&Shell::onPackageReceiving, this, _1));
-
-
 	std::string line;
 	while(printPrompt(), std::getline(std::cin, line)) {
 		std::istringstream iss{line};
