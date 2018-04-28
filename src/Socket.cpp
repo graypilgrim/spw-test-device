@@ -46,10 +46,11 @@ void Socket::receivePackage()
 
 	std::cout << "Received: " << read_chars << "B" << std::endl;
 	on_package_received_(Package{buffer, read_chars});
+	//TODO: loop, disconnection on read_chars == 0
 }
 
 void Socket::sendPackage(const Package &package)
 {
-	
+	//TODO	
 }
 

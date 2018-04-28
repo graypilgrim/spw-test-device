@@ -104,15 +104,34 @@ void Shell::sendPackage(const std::string &package_size) {
 
 void Shell::onPackageReceiving(const Package &package) {
 	std::cout << "Content: " << package.getRawData() << std::endl;
-}
-
-void Shell::onClientConnection() const{
-	//TODO
+	printLogRecord(package, false);
 }
 
 void Shell::logPackage(const Package &package, bool sent) {
-	//TODO
+	//TODO: mutex
 }
+
+void Shell::printLogHeader() {
+	///TODO
+}
+
+void Shell::printLogRecord(const Package &package, bool sent) {
+	// #time #id #sent/received #size #valid
+	std::stringstream res;
+
+	res << package.getId() << '\t';
+	res << (sent ? "S" : "R") << '\t';
+	res << package.getDataLen() << '\t';
+	res << (package.isValid() ? "valid" : "invalid");
+
+	if (verbosity)
+		std::cout << res.str() << std::endl;
+
+	if (log_file_.is_open())
+		log_file_ << res.str() << std::endl;
+		
+}
+
 
 void Shell::beVerbose(const std::string&) {
 	std::cout << "verbose" << std::endl;

@@ -65,7 +65,7 @@ const uint8_t* Package::getRawData() const
 	return raw_package_.data();
 }
 
-bool Package::isValid()
+bool Package::isValid() const
 {
 	if (raw_package_[HEADER_CRC_] != calculateHeaderCRC())
 		return false;
@@ -79,7 +79,7 @@ bool Package::isValid()
 	return true;
 }
 
-size_t Package::getDataLen()
+size_t Package::getDataLen() const
 {
 	size_t res = 0;
 
@@ -90,27 +90,33 @@ size_t Package::getDataLen()
 	return res;
 }
 
-uint8_t Package::getHeaderCRC()
+uint8_t Package::getHeaderCRC() const
 {
 	return raw_package_[HEADER_CRC_];
 }
 
-uint8_t Package::getDataCRC()
+uint8_t Package::getDataCRC() const
 {
 	return raw_package_[getDataCRCIndex()];
 }
 
-size_t Package::getDataCRCIndex()
+size_t Package::getId() const
+{
+	//TODO
+	return {};
+}
+
+size_t Package::getDataCRCIndex() const
 {
 	return DATA_OFFSET_ + getDataLen();
 }
 
-uint8_t Package::calculateHeaderCRC()
+uint8_t Package::calculateHeaderCRC() const
 {
 	return calculateCRC(raw_package_.data(), DATA_OFFSET_ - 1);
 }
 
-uint8_t Package::calculateDataCRC()
+uint8_t Package::calculateDataCRC() const
 {	
 	const auto ptr = raw_package_.data() + DATA_OFFSET_;
 	return calculateCRC(ptr, getDataLen());

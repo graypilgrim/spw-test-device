@@ -21,8 +21,9 @@ private:
 	void printHelpMessage(const std::string& = {});
 	void sendPackage(const std::string &package_size);
 	void onPackageReceiving(const Package &package);
-	void onClientConnection() const;
 	void logPackage(const Package &package, bool sent);
+	void printLogHeader();
+	void printLogRecord(const Package &package, bool sent);
 	void beVerbose(const std::string& = {});
 	void beQuiet(const std::string& = {});
 

@@ -12,17 +12,17 @@ public:
 
 	const uint8_t* getRawData() const;
 
-	bool isValid();
-	
-	size_t getDataLen();
-	uint8_t getHeaderCRC();
-	uint8_t getDataCRC();
+	bool isValid() const;
+	size_t getDataLen() const;
+	uint8_t getHeaderCRC() const;
+	uint8_t getDataCRC() const;
+	size_t getId() const;
 
 private:
-	uint8_t calculateHeaderCRC();
-	uint8_t calculateDataCRC();
+	uint8_t calculateHeaderCRC() const;
+	uint8_t calculateDataCRC() const;
 	void setDataLen(size_t len);
-	size_t getDataCRCIndex();
+	size_t getDataCRCIndex() const;
 
 	static uint8_t calculateCRC(const uint8_t *data, size_t len);
 
