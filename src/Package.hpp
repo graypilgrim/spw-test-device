@@ -18,13 +18,13 @@ public:
 	uint8_t getDataCRC() const;
 	size_t getId() const;
 
+	static uint8_t calculateCRC(const uint8_t *data, size_t len);
+
 private:
 	uint8_t calculateHeaderCRC() const;
 	uint8_t calculateDataCRC() const;
 	void setDataLen(size_t len);
 	size_t getDataCRCIndex() const;
-
-	static uint8_t calculateCRC(const uint8_t *data, size_t len);
 
 	std::vector<uint8_t> raw_package_;
 	
