@@ -37,7 +37,7 @@ Shell::Shell(int argc, char* argv[])
 
 			case 'l':
 				std::cout << optarg << std::endl;
-				log_file_name_ = optarg;
+				log_file_.open(optarg, std::ios::out);
 				verbosity = false;
 				break;
 
@@ -93,7 +93,7 @@ void Shell::sendPackage(const std::string &package_size) {
 
 	size_t size;
 	try {
-		size = std::strtoull(package_size.c_str(), NULL, 0);
+		size = std::stoull(package_size.c_str());
 	} catch (std::exception &e) {
 		std::cout << "Package size must be positive number";
 		return;
@@ -103,33 +103,38 @@ void Shell::sendPackage(const std::string &package_size) {
 }
 
 void Shell::onPackageReceiving(const Package &package) {
+	if (package.empty()) {
+		std::cout << "Client disconnected" << std::endl;
+		exit(0);
+	}
+
 	std::cout << "Content: " << package.getRawData() << std::endl;
-	printLogRecord(package, false);
+	logPackage(package, false);
+}
+
+std::string Shell::logHeader() {
+	return "ID\tSent/Received\tData length\tCorrectness";
 }
 
 void Shell::logPackage(const Package &package, bool sent) {
-	//TODO: mutex
-}
-
-void Shell::printLogHeader() {
-	///TODO
-}
-
-void Shell::printLogRecord(const Package &package, bool sent) {
-	// #time #id #sent/received #size #valid
 	std::stringstream res;
 
-	res << package.getId() << '\t';
-	res << (sent ? "S" : "R") << '\t';
-	res << package.getDataLen() << '\t';
-	res << (package.isValid() ? "valid" : "invalid");
+	res << package.getId() << "\t";
+	res << (sent ? "S" : "R") << "\t\t";
+	res << package.getDataLen() << "\t\t";
+	res << (package.correct() ? "correct" : "incorrect");
 
-	if (verbosity)
+	log_mutex_.lock();
+
+	if (verbosity){
+		std::cout << logHeader() << std::endl;
 		std::cout << res.str() << std::endl;
+	}
 
 	if (log_file_.is_open())
 		log_file_ << res.str() << std::endl;
-		
+
+	log_mutex_.unlock();
 }
 
 

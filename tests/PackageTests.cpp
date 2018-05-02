@@ -5,7 +5,7 @@ TEST_CASE( "Package constructors", "[package]" ) {
 	SECTION( "Zero len" ) {
 		Package p{0};
 
-		REQUIRE( p.isValid() == true );
+		REQUIRE( p.correct() == true );
 		REQUIRE( p.getDataLen() == 0 );
 		REQUIRE( p.getDataCRC() == 0 );
 	}
@@ -14,7 +14,7 @@ TEST_CASE( "Package constructors", "[package]" ) {
 		size_t size = 16;
 		Package p{size};
 
-		REQUIRE( p.isValid() == true );
+		REQUIRE( p.correct() == true );
 		REQUIRE( p.getDataLen() == size );
 	}
 
@@ -22,7 +22,7 @@ TEST_CASE( "Package constructors", "[package]" ) {
 		size_t size = 65536;
 		Package p{size};
 
-		REQUIRE( p.isValid() == true );
+		REQUIRE( p.correct() == true );
 		REQUIRE( p.getDataLen() == size );
 	}
 }

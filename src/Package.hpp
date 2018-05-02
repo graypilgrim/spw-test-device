@@ -10,16 +10,18 @@ class Package
 public:
 	static constexpr size_t MAX_PACKAGE_LEN = 16777215;
 
+	Package() = default;
 	Package(size_t data_len);
 	Package(std::vector<uint8_t> data);
 
 	const uint8_t* getRawData() const;
 
-	bool isValid() const;
+	bool correct() const;
 	size_t getDataLen() const;
 	uint8_t getHeaderCRC() const;
 	uint8_t getDataCRC() const;
 	size_t getId() const;
+	bool empty() const;
 
 	static uint8_t calculateCRC(const uint8_t *data, size_t len);
 

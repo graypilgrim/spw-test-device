@@ -39,15 +39,21 @@ void Socket::startServer(std::function<void(const Package &package)> on_package_
 void Socket::receivePackage()
 {
 	std::vector<uint8_t> buffer(Package::MAX_PACKAGE_LEN);
-	
-	auto read_chars = read(client_socket_descriptor_, buffer.data(), Package::MAX_PACKAGE_LEN);
 
-	if (read_chars == -1)
-		throw std::runtime_error("Reading data error");
+	while (true) {
+		auto read_chars = read(client_socket_descriptor_, buffer.data(), Package::MAX_PACKAGE_LEN);
 
-	std::cout << "Received: " << read_chars << "B" << std::endl;
-	on_package_received_(Package{std::move(buffer)});
-	//TODO: loop, disconnection on read_chars == 0
+		if (read_chars == -1)
+			throw std::runtime_error("Reading data error");
+
+		if (read_chars == 0) {
+			on_package_received_({});
+			break;
+		}
+
+		std::cout << "Received: " << read_chars << "B" << std::endl;
+		on_package_received_({std::move(buffer)});
+	}
 }
 
 void Socket::sendPackage(const Package &package)

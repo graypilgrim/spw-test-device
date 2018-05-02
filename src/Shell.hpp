@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <functional>
 #include <fstream>
+#include <mutex>
 
 class Shell
 {
@@ -22,16 +23,15 @@ private:
 	void sendPackage(const std::string &package_size);
 	void onPackageReceiving(const Package &package);
 	void logPackage(const Package &package, bool sent);
-	void printLogHeader();
-	void printLogRecord(const Package &package, bool sent);
+	std::string logHeader();
 	void beVerbose(const std::string& = {});
 	void beQuiet(const std::string& = {});
 
 	unsigned int server_port_;
-	std::string log_file_name_;
 	bool verbosity = true;
 	std::ofstream log_file_;
 	std::unordered_map<std::string, std::function<void(const std::string&)>> methods;
+	std::mutex log_mutex_;
 
 	Socket socket;
 

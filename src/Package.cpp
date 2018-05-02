@@ -63,7 +63,7 @@ const uint8_t* Package::getRawData() const
 	return raw_package_.data();
 }
 
-bool Package::isValid() const
+bool Package::correct() const
 {
 	if (raw_package_[HEADER_CRC_] != calculateHeaderCRC())
 		return false;
@@ -100,8 +100,17 @@ uint8_t Package::getDataCRC() const
 
 size_t Package::getId() const
 {
-	//TODO
-	return {};
+	size_t res = 0;
+
+	res += raw_package_[TRANSACTION_ID_MS_] << 8;
+	res += raw_package_[TRANSACTION_ID_LS_];
+
+	return res;
+}
+
+bool Package::empty() const
+{
+	return raw_package_.empty();
 }
 
 size_t Package::getDataCRCIndex() const
