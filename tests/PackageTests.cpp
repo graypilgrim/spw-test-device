@@ -1,4 +1,4 @@
-#include <catch.hpp>
+#include <catch/catch.hpp>
 #include <Package.hpp>
 
 TEST_CASE( "Package constructors", "[package]" ) {
