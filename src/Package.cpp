@@ -1,5 +1,7 @@
 #include "Package.hpp"
 
+#include <iostream>
+
 #include "RMAPConstants.hpp"
 
 namespace
@@ -51,13 +53,9 @@ Package::Package(size_t data_len)
 	raw_package_[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;	
 }
 
-Package::Package(uint8_t* data, size_t package_len)
+Package::Package(std::vector<uint8_t> data)
 {
-	raw_package_.reserve(package_len);
-	for (auto i = 0u; i < package_len; ++i){
-		raw_package_[i] = *data;
-		++data;
-	}
+	raw_package_ = std::move(data);
 }
 
 const uint8_t* Package::getRawData() const

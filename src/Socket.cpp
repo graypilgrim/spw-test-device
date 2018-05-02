@@ -38,14 +38,15 @@ void Socket::startServer(std::function<void(const Package &package)> on_package_
 
 void Socket::receivePackage()
 {
-	unsigned char buffer[256] = {0};
-	auto read_chars = read(client_socket_descriptor_, &buffer, 256);
+	std::vector<uint8_t> buffer(Package::MAX_PACKAGE_LEN);
+	
+	auto read_chars = read(client_socket_descriptor_, buffer.data(), Package::MAX_PACKAGE_LEN);
 
 	if (read_chars == -1)
 		throw std::runtime_error("Reading data error");
 
 	std::cout << "Received: " << read_chars << "B" << std::endl;
-	on_package_received_(Package{buffer, read_chars});
+	on_package_received_(Package{std::move(buffer)});
 	//TODO: loop, disconnection on read_chars == 0
 }
 

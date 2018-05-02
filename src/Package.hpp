@@ -2,13 +2,16 @@
 #define PACKAGE_HPP
 
 #include <vector>
+
 #include <cstdint>
 
 class Package
 {
 public:
+	static constexpr size_t MAX_PACKAGE_LEN = 16777215;
+
 	Package(size_t data_len);
-	Package(uint8_t* data, size_t package_len);
+	Package(std::vector<uint8_t> data);
 
 	const uint8_t* getRawData() const;
 
