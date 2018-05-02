@@ -58,6 +58,14 @@ void Socket::receivePackage()
 
 void Socket::sendPackage(const Package &package)
 {
-	//TODO	
+	auto sent_chars = write(client_socket_descriptor_, package.getRawData(), package.getPackageLen());
+
+	if (sent_chars < 0)
+		throw std::runtime_error("Writing data error");
+
+	if (static_cast<size_t>(sent_chars) < package.getPackageLen()) {
+		std::cerr << "Sent less data than expected.";
+		std::cerr << "Sent: " << sent_chars << ", expected: " << package.getPackageLen() << std::endl;	
+	}
 }
 

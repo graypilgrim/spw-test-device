@@ -22,6 +22,7 @@ public:
 	uint8_t getDataCRC() const;
 	size_t getId() const;
 	bool empty() const;
+	size_t getPackageLen() const;
 
 	static uint8_t calculateCRC(const uint8_t *data, size_t len);
 

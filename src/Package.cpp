@@ -113,6 +113,11 @@ bool Package::empty() const
 	return raw_package_.empty();
 }
 
+size_t Package::getPackageLen() const
+{
+	return raw_package_.size();
+}
+
 size_t Package::getDataCRCIndex() const
 {
 	return DATA_OFFSET_ + getDataLen();
