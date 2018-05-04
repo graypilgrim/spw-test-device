@@ -44,7 +44,8 @@ namespace
 
 Package::Package(size_t data_len)
 {
-	raw_package_.reserve(MIN_PACKAGE_LEN_ + data_len); 
+	raw_package_.reserve(MIN_PACKAGE_LEN_ + data_len);
+	raw_package_.resize(data_len);
 	setDataLen(data_len);
 
 	raw_package_[HEADER_CRC_] = calculateHeaderCRC();
