@@ -38,9 +38,10 @@ void Socket::startServer(std::function<void(const Package &package)> on_package_
 
 void Socket::receivePackage()
 {
-	std::vector<uint8_t> buffer(Package::MAX_PACKAGE_LEN);
-
 	while (true) {
+		std::vector<uint8_t> buffer;
+		buffer.reserve(Package::MAX_PACKAGE_LEN);
+		buffer.resize(Package::MAX_PACKAGE_LEN);
 		auto read_chars = read(client_socket_descriptor_, buffer.data(), Package::MAX_PACKAGE_LEN);
 
 		if (read_chars == -1)
