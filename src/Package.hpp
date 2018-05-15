@@ -9,12 +9,15 @@ class Package
 {
 public:
 	static constexpr size_t MAX_PACKAGE_LEN = 16777215;
+	static constexpr size_t HEADER_LEN = 16;
+	static constexpr size_t TAIL_LEN = 2;
 
 	Package() = default;
 	Package(size_t data_len);
 	Package(std::vector<uint8_t> data);
 
 	const uint8_t* getRawData() const;
+	std::vector<uint8_t>& getData();
 
 	bool correct() const;
 	size_t getDataLen() const;
@@ -33,10 +36,10 @@ private:
 	size_t getDataCRCIndex() const;
 
 	std::vector<uint8_t> raw_package_;
-	
+
 	static constexpr size_t MIN_PACKAGE_LEN_= 18;
 	static constexpr size_t DATA_OFFSET_ = 16;
-	static constexpr size_t TRANSACTION_ID_MS_ = 5;	
+	static constexpr size_t TRANSACTION_ID_MS_ = 5;
 	static constexpr size_t TRANSACTION_ID_LS_ = 6;
 	static constexpr size_t DATA_LEN_MS_ = 12;
 	static constexpr size_t DATA_LEN_ = 13;

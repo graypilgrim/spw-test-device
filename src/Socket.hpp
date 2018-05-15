@@ -17,7 +17,7 @@ public:
 	Socket() = default;
 	Socket(unsigned int port_no);
 
-	void startServer(std::function<void(const Package &package)> on_package_received);
+	void startServer(std::function<void(Package package)> on_package_received);
 	void sendPackage(const Package &package);
 
 private:

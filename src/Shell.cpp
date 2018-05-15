@@ -57,10 +57,10 @@ void Shell::run()
 {
 	std::cout << "Starting server on port " << server_port_ << "..." << std::endl;
 	socket = Socket{server_port_};
-	socket.startServer([this](const Package &package){onPackageReceiving(package);});
-	
+	socket.startServer([this](Package package){onPackageReceiving(std::move(package));});
+
 	std::cout << "Client connected" << std::endl;
-	
+
 	std::string line;
 	while(printPrompt(), std::getline(std::cin, line)) {
 		std::istringstream iss{line};
@@ -102,14 +102,19 @@ void Shell::sendPackage(const std::string &package_size) {
 	socket.sendPackage(Package{size});
 }
 
-void Shell::onPackageReceiving(const Package &package) {
+void Shell::onPackageReceiving(Package package) {
 	if (package.empty()) {
 		std::cout << "Client disconnected" << std::endl;
 		exit(0);
 	}
 
-	std::cout << "Content: " << package.getRawData() << std::endl;
-	logPackage(package, false);
+	for (uint8_t it : package.getData())
+		std::cout << std::hex << (uint32_t)it  << std::dec << " ";
+
+	std::cout << "Real len: " << package.getData().size() << std::endl;
+
+	std::cout << std::endl;
+	// logPackage(package, false);
 }
 
 std::string Shell::logHeader() {
@@ -147,4 +152,3 @@ void Shell::beQuiet(const std::string&) {
 	std::cout << "quiet" << std::endl;
 	verbosity = false;
 }
-

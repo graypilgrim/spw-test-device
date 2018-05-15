@@ -21,7 +21,7 @@ private:
 	void printPrompt();
 	void printHelpMessage(const std::string& = {});
 	void sendPackage(const std::string &package_size);
-	void onPackageReceiving(const Package &package);
+	void onPackageReceiving(Package package);
 	void logPackage(const Package &package, bool sent);
 	std::string logHeader();
 	void beVerbose(const std::string& = {});

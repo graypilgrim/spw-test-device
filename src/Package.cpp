@@ -50,8 +50,8 @@ Package::Package(size_t data_len)
 
 	raw_package_[HEADER_CRC_] = calculateHeaderCRC();
 	raw_package_[getDataCRCIndex()] = calculateDataCRC();
-	
-	raw_package_[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;	
+
+	raw_package_[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;
 }
 
 Package::Package(std::vector<uint8_t> data)
@@ -62,6 +62,11 @@ Package::Package(std::vector<uint8_t> data)
 const uint8_t* Package::getRawData() const
 {
 	return raw_package_.data();
+}
+
+std::vector<uint8_t>& Package::getData()
+{
+	return raw_package_;
 }
 
 bool Package::correct() const
@@ -130,7 +135,7 @@ uint8_t Package::calculateHeaderCRC() const
 }
 
 uint8_t Package::calculateDataCRC() const
-{	
+{
 	const auto ptr = raw_package_.data() + DATA_OFFSET_;
 	return calculateCRC(ptr, getDataLen());
 }
@@ -138,7 +143,7 @@ uint8_t Package::calculateDataCRC() const
 void Package::setDataLen(size_t len)
 {
 	uint8_t temp = 0;
-	
+
 	temp = static_cast<uint8_t>(len >> 16);
 	raw_package_[DATA_LEN_MS_] = temp;
 
@@ -157,7 +162,5 @@ uint8_t Package::calculateCRC(const uint8_t *data, size_t len)
 		data++;
 	}
 
-  return crc;	
+  return crc;
 }
-
-
