@@ -89,8 +89,6 @@ void Shell::printHelpMessage(const std::string&) {
 }
 
 void Shell::sendPackage(const std::string &package_size) {
-	std::cout << "sending package of size: " << package_size << "B" << std::endl;
-
 	size_t size;
 	try {
 		size = std::stoull(package_size.c_str());
@@ -99,7 +97,13 @@ void Shell::sendPackage(const std::string &package_size) {
 		return;
 	}
 
-	socket.sendPackage(Package{size});
+	auto p = Package{size};
+	for (uint8_t it : p.getData())
+		std::cout << std::hex << (uint32_t)it  << std::dec << " ";
+	std::cout << std::endl;
+
+	std::cout << "sending package of data size: " << package_size << "B" << std::endl;
+	socket.sendPackage(p);
 }
 
 void Shell::onPackageReceiving(Package package) {
@@ -108,13 +112,7 @@ void Shell::onPackageReceiving(Package package) {
 		exit(0);
 	}
 
-	for (uint8_t it : package.getData())
-		std::cout << std::hex << (uint32_t)it  << std::dec << " ";
-
-	std::cout << "Real len: " << package.getData().size() << std::endl;
-
-	std::cout << std::endl;
-	// logPackage(package, false);
+	logPackage(package, false);
 }
 
 std::string Shell::logHeader() {

@@ -44,14 +44,14 @@ namespace
 
 Package::Package(size_t data_len)
 {
-	raw_package_.reserve(MIN_PACKAGE_LEN_ + data_len);
-	raw_package_.resize(data_len);
-	setDataLen(data_len);
+	size_t len = data_len == 0 ? MIN_PACKAGE_LEN_ + EOP_LEN : MIN_PACKAGE_LEN_ + data_len + DATA_CRC_LEN + EOP_LEN;
+	raw_package_.resize(len);
 
+	setDataLen(data_len);
 	raw_package_[HEADER_CRC_] = calculateHeaderCRC();
 	raw_package_[getDataCRCIndex()] = calculateDataCRC();
 
-	raw_package_[MIN_PACKAGE_LEN_ + data_len - 1] = EOP_SIGN_;
+	raw_package_.back() = EOP_SIGN_;
 }
 
 Package::Package(std::vector<uint8_t> data)

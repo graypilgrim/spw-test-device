@@ -10,7 +10,8 @@ class Package
 public:
 	static constexpr size_t MAX_PACKAGE_LEN = 16777215;
 	static constexpr size_t HEADER_LEN = 16;
-	static constexpr size_t TAIL_LEN = 2;
+	static constexpr size_t DATA_CRC_LEN = 1;
+	static constexpr size_t EOP_LEN = 1;
 
 	Package() = default;
 	Package(size_t data_len);
@@ -37,7 +38,7 @@ private:
 
 	std::vector<uint8_t> raw_package_;
 
-	static constexpr size_t MIN_PACKAGE_LEN_= 18;
+	static constexpr size_t MIN_PACKAGE_LEN_= 16;
 	static constexpr size_t DATA_OFFSET_ = 16;
 	static constexpr size_t TRANSACTION_ID_MS_ = 5;
 	static constexpr size_t TRANSACTION_ID_LS_ = 6;
@@ -45,7 +46,7 @@ private:
 	static constexpr size_t DATA_LEN_ = 13;
 	static constexpr size_t DATA_LEN_LS_ = 14;
 	static constexpr size_t HEADER_CRC_ = 15;
-	static constexpr uint8_t EOP_SIGN_ = 0x0;
+	static constexpr uint8_t EOP_SIGN_ = 0xf0;
 };
 
 #endif

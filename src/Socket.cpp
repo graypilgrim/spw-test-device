@@ -60,12 +60,11 @@ void Socket::receivePackage()
 
 	while (read_chars > 0) {
 		append = true;
-		
+
 		switch (read_status) {
 		case ReadStatus::start:
 		{
 			read_chars = read(client_socket_descriptor_, buffer.data(), Package::HEADER_LEN);
-			std::cout << "ReadStatus::start: " << read_chars << std::endl;
 
 			if (static_cast<size_t>(read_chars) < Package::HEADER_LEN) {
 				read_status = ReadStatus::partial_header;
@@ -80,9 +79,8 @@ void Socket::receivePackage()
 
 		case ReadStatus::data:
 		{
-			int expected = Package{res}.getDataLen() + 1;
+			int expected = Package{res}.getDataLen() + Package::DATA_CRC_LEN; //TODO: static method
 			read_chars = read(client_socket_descriptor_, buffer.data(), expected);
-			std::cout << "ReadStatus::data" << read_chars << std::endl;
 
 			if (read_chars < expected)
 				read_status = ReadStatus::partial_data;
@@ -94,7 +92,6 @@ void Socket::receivePackage()
 		case ReadStatus::partial_header:
 		{
 			read_chars = read(client_socket_descriptor_, buffer.data(), Package::HEADER_LEN - res.size());
-			std::cout << "ReadStatus::partial_header" << read_chars << std::endl;
 
 			if (read_chars + res.size() == Package::HEADER_LEN)
 				read_status = ReadStatus::data;
@@ -103,11 +100,10 @@ void Socket::receivePackage()
 
 		case ReadStatus::partial_data:
 		{
-			int expected = Package{res}.getDataLen() + Package::TAIL_LEN - read_chars;
+			int expected = Package{res}.getDataLen() + Package::DATA_CRC_LEN - read_chars;
 			read_chars = read(client_socket_descriptor_, buffer.data(), expected);
-			std::cout << "ReadStatus::partial_data" << read_chars << std::endl;
 
-			if (res.size() + read_chars == Package::HEADER_LEN + Package{res}.getDataLen() + Package::TAIL_LEN) {
+			if (res.size() + read_chars == Package::HEADER_LEN + Package{res}.getDataLen() + Package::DATA_CRC_LEN) {
 				read_status = ReadStatus::read_eop;
 			}
 		}
@@ -151,5 +147,7 @@ void Socket::sendPackage(const Package &package)
 	if (static_cast<size_t>(sent_chars) < package.getPackageLen()) {
 		std::cerr << "Sent less data than expected.";
 		std::cerr << "Sent: " << sent_chars << ", expected: " << package.getPackageLen() << std::endl;
+	} else {
+		std::cout << "Sent: " << sent_chars << std::endl;
 	}
 }
