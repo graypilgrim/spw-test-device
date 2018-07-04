@@ -71,14 +71,23 @@ std::vector<uint8_t>& Package::getData()
 
 bool Package::correct() const
 {
-	if (raw_package_[HEADER_CRC_] != calculateHeaderCRC())
+	if (raw_package_[HEADER_CRC_] != calculateHeaderCRC()) {
+		std::cout << "header crc" << std::endl;
 		return false;
+	}
 
-	if (raw_package_[getDataCRCIndex()] != calculateDataCRC())
+	if (raw_package_[getDataCRCIndex()] != calculateDataCRC()) {
+		std::cout << "data crc" << std::endl;
 		return false;
+	}
 
-	if (raw_package_[MIN_PACKAGE_LEN_ + getDataLen() - 1] != EOP_SIGN_)
+	auto eop_index = MIN_PACKAGE_LEN_;
+	eop_index += getDataLen() ? (getDataLen() + 1) : 0;
+
+	if (raw_package_[eop_index] != EOP_SIGN_) {
+		std::cout << "eop" << std::endl;
 		return false;
+	}
 
 	return true;
 }

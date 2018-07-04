@@ -112,6 +112,10 @@ void Shell::onPackageReceiving(Package package) {
 		exit(0);
 	}
 
+	for (uint8_t it : package.getData())
+		std::cout << std::hex << (uint32_t)it  << std::dec << " ";
+	std::cout << std::endl;
+
 	logPackage(package, false);
 }
 
