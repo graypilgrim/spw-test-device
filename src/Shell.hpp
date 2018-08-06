@@ -22,7 +22,6 @@ private:
 	void printHelpMessage(const std::string& = {});
 	void sendPackage(const std::string &package_size);
 	void onPackageReceiving(Package package);
-	void logPackage(const Package &package, bool sent);
 	std::string logHeader();
 	void beVerbose(const std::string& = {});
 	void beQuiet(const std::string& = {});
@@ -31,7 +30,6 @@ private:
 	bool verbosity = true;
 	std::ofstream log_file_;
 	std::unordered_map<std::string, std::function<void(const std::string&)>> methods;
-	std::mutex log_mutex_;
 
 	Socket socket;
 

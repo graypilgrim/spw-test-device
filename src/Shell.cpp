@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "Logger.hpp"
+
 Shell::Shell(int argc, char* argv[])
 {
 	struct option long_options[] =
@@ -99,9 +101,9 @@ void Shell::sendPackage(const std::string &package_size) {
 	}
 
 	auto p = Package{size};
-	for (uint8_t it : p.getData())
-		std::cout << std::hex << (uint32_t)it  << std::dec << " ";
-	std::cout << std::endl;
+	// for (uint8_t it : p.getData())
+	// 	std::cout << std::hex << (uint32_t)it  << std::dec << " ";
+	// std::cout << std::endl;
 
 	std::cout << "sending package of data size: " << package_size << "B" << std::endl;
 	socket.sendPackage(p);
@@ -113,42 +115,16 @@ void Shell::onPackageReceiving(Package package) {
 		exit(0);
 	}
 
-	for (uint8_t it : package.getData())
-		std::cout << std::hex << (uint32_t)it  << std::dec << " ";
-	std::cout << std::endl;
+	// for (uint8_t it : package.getData())
+	// 	std::cout << std::hex << (uint32_t)it  << std::dec << " ";
+	// std::cout << std::endl;
 
-	logPackage(package, false);
+	Logger::logPackage(package, false);
 }
 
 std::string Shell::logHeader() {
 	return "ID\tSent/Received\tData length\tCorrectness";
 }
-
-void Shell::logPackage(const Package &package, bool sent) {
-	std::stringstream res;
-
-	res << package.getId() << "\t";
-	res << (sent ? "S" : "R") << "\t";
-	res << package.getDataLen() << "\t";
-	res << (package.correct() ? "C\t" : "X\t");
-
-	timespec time1;
-    clock_gettime(CLOCK_MONOTONIC, &time1);
-    res << time1.tv_sec << ":" << time1.tv_nsec << std::endl;
-
-	log_mutex_.lock();
-
-	if (verbosity){
-		// std::cout << logHeader() << std::endl;
-		std::cout << res.str() << std::endl;
-	}
-
-	if (log_file_.is_open())
-		log_file_ << res.str() << std::endl;
-
-	log_mutex_.unlock();
-}
-
 
 void Shell::beVerbose(const std::string&) {
 	std::cout << "verbose" << std::endl;

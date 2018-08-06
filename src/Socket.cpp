@@ -4,6 +4,8 @@
 #include <iostream>
 #include <thread>
 
+#include "Logger.hpp"
+
 namespace
 {
 	enum class ReadStatus
@@ -148,6 +150,6 @@ void Socket::sendPackage(const Package &package)
 		std::cerr << "Sent less data than expected.";
 		std::cerr << "Sent: " << sent_chars << ", expected: " << package.getPackageLen() << std::endl;
 	} else {
-		std::cout << "Sent: " << sent_chars << std::endl;
+		Logger::logPackage(package, true);
 	}
 }
