@@ -44,6 +44,8 @@ namespace
 
 Package::Package(size_t data_len)
 {
+	data_len %= MAX_PACKAGE_LEN;
+
 	size_t len = data_len == 0 ? MIN_PACKAGE_LEN_ + EOP_LEN : MIN_PACKAGE_LEN_ + data_len + DATA_CRC_LEN + EOP_LEN;
 	raw_package_.resize(len);
 

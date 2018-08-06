@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <time.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -127,14 +128,18 @@ void Shell::logPackage(const Package &package, bool sent) {
 	std::stringstream res;
 
 	res << package.getId() << "\t";
-	res << (sent ? "S" : "R") << "\t\t";
-	res << package.getDataLen() << "\t\t";
-	res << (package.correct() ? "correct" : "incorrect");
+	res << (sent ? "S" : "R") << "\t";
+	res << package.getDataLen() << "\t";
+	res << (package.correct() ? "C\t" : "X\t");
+
+	timespec time1;
+    clock_gettime(CLOCK_MONOTONIC, &time1);
+    res << time1.tv_sec << ":" << time1.tv_nsec << std::endl;
 
 	log_mutex_.lock();
 
 	if (verbosity){
-		std::cout << logHeader() << std::endl;
+		// std::cout << logHeader() << std::endl;
 		std::cout << res.str() << std::endl;
 	}
 
