@@ -105,7 +105,7 @@ void Shell::sendPackage(const std::string &package_size) {
 	// 	std::cout << std::hex << (uint32_t)it  << std::dec << " ";
 	// std::cout << std::endl;
 
-	std::cout << "sending package of data size: " << package_size << "B" << std::endl;
+	// std::cout << "sending package of data size: " << package_size << "B" << std::endl;
 	socket.sendPackage(p);
 }
 
@@ -119,7 +119,7 @@ void Shell::onPackageReceiving(Package package) {
 	// 	std::cout << std::hex << (uint32_t)it  << std::dec << " ";
 	// std::cout << std::endl;
 
-	Logger::logPackage(package, false);
+	Logger::instance().logPackage(package, false);
 }
 
 std::string Shell::logHeader() {

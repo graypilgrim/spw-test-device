@@ -1,4 +1,4 @@
-#include <catch/catch.hpp>
+#include <catch2/catch.hpp>
 #include <Package.hpp>
 
 TEST_CASE( "Package constructors", "[package]" ) {
@@ -26,4 +26,3 @@ TEST_CASE( "Package constructors", "[package]" ) {
 		REQUIRE( p.getDataLen() == size );
 	}
 }
-

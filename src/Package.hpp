@@ -35,8 +35,11 @@ private:
 	uint8_t calculateDataCRC() const;
 	void setDataLen(size_t len);
 	size_t getDataCRCIndex() const;
+	void setId();
 
 	std::vector<uint8_t> raw_package_;
+
+	static size_t counter;
 
 	static constexpr size_t MIN_PACKAGE_LEN_= 16;
 	static constexpr size_t DATA_OFFSET_ = 16;

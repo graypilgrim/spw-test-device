@@ -53,6 +53,7 @@ void Socket::startServer(std::function<void(Package package)> on_package_receive
 
 void Socket::receivePackage()
 {
+
 	int read_chars = 1;
 	bool append = true;
 	ReadStatus read_status = ReadStatus::start;
@@ -150,6 +151,6 @@ void Socket::sendPackage(const Package &package)
 		std::cerr << "Sent less data than expected.";
 		std::cerr << "Sent: " << sent_chars << ", expected: " << package.getPackageLen() << std::endl;
 	} else {
-		Logger::logPackage(package, true);
+		Logger::instance().logPackage(package, true);
 	}
 }

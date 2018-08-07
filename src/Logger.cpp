@@ -3,6 +3,13 @@
 #include <iostream>
 #include <sstream>
 
+#include <time.h>
+
+Logger::Logger()
+{
+    file.open(FILE_NAME_, std::ofstream::out | std::ofstream::app);
+}
+
 void Logger::logPackage(const Package &package, bool sent)
 {
     std::stringstream res;
@@ -16,5 +23,11 @@ void Logger::logPackage(const Package &package, bool sent)
     clock_gettime(CLOCK_MONOTONIC, &time1);
     res << time1.tv_sec << ":" << time1.tv_nsec;
 
-	std::cout << res.str() << std::endl;
+	file << res.str() << std::endl;
+}
+
+Logger& Logger::instance()
+{
+    static Logger l;
+    return l;
 }

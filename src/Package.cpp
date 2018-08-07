@@ -42,6 +42,8 @@ namespace
 	};
 }
 
+size_t Package::counter = 0;
+
 Package::Package(size_t data_len)
 {
 	data_len %= MAX_PACKAGE_LEN;
@@ -50,6 +52,7 @@ Package::Package(size_t data_len)
 	raw_package_.resize(len);
 
 	setDataLen(data_len);
+	setId();
 	raw_package_[HEADER_CRC_] = calculateHeaderCRC();
 	raw_package_[getDataCRCIndex()] = calculateDataCRC();
 
@@ -98,8 +101,8 @@ size_t Package::getDataLen() const
 {
 	size_t res = 0;
 
-	res += raw_package_[DATA_LEN_MS_] << 16;
-	res += raw_package_[DATA_LEN_] << 8;
+	res += (raw_package_[DATA_LEN_MS_] << 16);
+	res += (raw_package_[DATA_LEN_] << 8);
 	res += raw_package_[DATA_LEN_LS_];
 
 	return res;
@@ -138,6 +141,13 @@ size_t Package::getPackageLen() const
 size_t Package::getDataCRCIndex() const
 {
 	return DATA_OFFSET_ + getDataLen();
+}
+
+void Package::setId()
+{
+	raw_package_[TRANSACTION_ID_MS_] = static_cast<uint8_t>(counter >> 8);
+	raw_package_[TRANSACTION_ID_LS_] = static_cast<uint8_t>(counter);
+	++counter;
 }
 
 uint8_t Package::calculateHeaderCRC() const
