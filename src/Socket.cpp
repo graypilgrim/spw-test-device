@@ -103,9 +103,10 @@ void Socket::receivePackage()
 
 		case ReadStatus::partial_data:
 		{
-			int expected = Package{res}.getDataLen() + Package::DATA_CRC_LEN - read_chars;
+			int expected = Package::HEADER_LEN + Package{res}.getDataLen() + Package::DATA_CRC_LEN - res.size();
 			read_chars = read(client_socket_descriptor_, buffer.data(), expected);
 
+			std::cout << "~~ " << res.size() + read_chars << " " << Package::HEADER_LEN + Package{res}.getDataLen() + Package::DATA_CRC_LEN << std::endl;
 			if (res.size() + read_chars == Package::HEADER_LEN + Package{res}.getDataLen() + Package::DATA_CRC_LEN) {
 				read_status = ReadStatus::read_eop;
 			}
